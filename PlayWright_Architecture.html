@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright Architecture Explained</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:linear-gradient(to right,#eef7ff,#ffffff);
+padding:30px;
+color:#222;
+}
+
+.container{
+max-width:1400px;
+margin:auto;
+}
+
+h1{
+text-align:center;
+color:#0d47a1;
+margin-bottom:20px;
+font-size:42px;
+}
+
+.subtitle{
+text-align:center;
+margin-bottom:35px;
+color:#555;
+font-size:18px;
+}
+
+.architecture{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:30px;
+flex-wrap:wrap;
+}
+
+.card{
+border-radius:15px;
+padding:20px;
+box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+
+.client{
+background:#dff2ff;
+width:300px;
+}
+
+.server{
+background:#ffedd5;
+width:280px;
+}
+
+.browser{
+width:260px;
+padding:15px;
+color:white;
+font-weight:bold;
+}
+
+.chrome{
+background:#66bb6a;
+}
+
+.firefox{
+background:#ff9800;
+}
+
+.webkit{
+background:#9c27b0;
+}
+
+.arrow{
+font-size:40px;
+font-weight:bold;
+color:#1565c0;
+}
+
+h2{
+margin-bottom:15px;
+}
+
+ul{
+padding-left:20px;
+}
+
+li{
+margin-bottom:8px;
+}
+
+.section{
+margin-top:35px;
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+.section h2{
+color:#0d47a1;
+margin-bottom:15px;
+}
+
+.example{
+background:#e8f5e9;
+padding:20px;
+border-left:6px solid green;
+border-radius:8px;
+margin-top:15px;
+}
+
+.interview{
+background:#fff3cd;
+padding:20px;
+border-left:6px solid #ff9800;
+border-radius:8px;
+margin-top:15px;
+}
+
+.protocol-box{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+margin-top:20px;
+}
+
+.small-box{
+flex:1;
+min-width:250px;
+padding:20px;
+border-radius:10px;
+color:white;
+}
+
+.cdp{
+background:#4caf50;
+}
+
+.cdpplus{
+background:#2196f3;
+}
+
+.footer{
+text-align:center;
+margin-top:30px;
+font-size:14px;
+color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎭 Playwright Architecture</h1>
+
+<p class="subtitle">
+Understanding Client Libraries, WebSockets, Auto Waiting, CDP and Browser Communication
+</p>
+
+<!-- Architecture Diagram -->
+
+<div class="architecture">
+
+<div class="card client">
+<h2>Client Libraries</h2>
+<ul>
+<li>JavaScript / TypeScript</li>
+<li>Java</li>
+<li>Python</li>
+<li>C#</li>
+</ul>
+
+<br>
+
+<p>
+Test scripts are written using Playwright APIs.
+These libraries convert your code into protocol commands.
+</p>
+</div>
+
+<div class="arrow">⇄</div>
+
+<div class="card server">
+<h2>Playwright Server</h2>
+<ul>
+<li>Runs on Node.js</li>
+<li>Maintains Browser Session</li>
+<li>Performs Auto Waiting</li>
+<li>Sends Commands</li>
+<li>Receives Browser Events</li>
+</ul>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:20px">
+
+<div class="browser chrome">
+Chrome Rendering Process<br>
+Communication: CDP
+</div>
+
+<div class="browser firefox">
+Firefox Rendering Process<br>
+Communication: Playwright Protocol
+</div>
+
+<div class="browser webkit">
+WebKit Rendering Process<br>
+Communication: Playwright Protocol
+</div>
+
+</div>
+
+</div>
+
+<!-- Client Libraries -->
+
+<div class="section">
+
+<h2>1. Client Libraries</h2>
+
+<p>
+Client Libraries are language bindings provided by Playwright.
+They allow automation code to be written in different programming languages.
+</p>
+
+<br>
+
+<ul>
+<li>JavaScript / TypeScript</li>
+<li>Java</li>
+<li>Python</li>
+<li>C#</li>
+</ul>
+
+<br>
+
+<p>
+Regardless of the programming language, the libraries send automation commands
+to the Playwright Server running inside Node.js.
+</p>
+
+</div>
+
+<!-- WebSocket -->
+
+<div class="section">
+
+<h2>2. Why WebSocket is Used?</h2>
+
+<p>
+Communication between Client Libraries and Playwright Server happens using
+WebSocket (ws://).
+</p>
+
+<br>
+
+<ul>
+<li>Persistent Connection</li>
+<li>Two-way Communication</li>
+<li>Low Latency</li>
+<li>Real-time Browser Events</li>
+</ul>
+
+<br>
+
+<p>
+Unlike HTTP Request/Response, WebSocket keeps one connection open
+throughout the test execution.
+</p>
+
+</div>
+
+<!-- Auto Wait -->
+
+<div class="section">
+
+<h2>3. How Auto Waiting Works</h2>
+
+<p>
+One of the strongest features of Playwright is Auto Waiting.
+Before performing an action, Playwright automatically checks whether
+the element is ready.
+</p>
+
+<br>
+
+<h3>Playwright waits for:</h3>
+
+<ul>
+<li>Element Exists</li>
+<li>Element Visible</li>
+<li>Element Stable</li>
+<li>Element Enabled</li>
+<li>Element Receives Click Events</li>
+</ul>
+
+<br>
+
+<h3>Example</h3>
+
+<pre>
+await page.locator("#login").click();
+</pre>
+
+<p>
+Playwright does NOT click immediately.
+It first ensures the button is visible and clickable.
+</p>
+
+</div>
+
+<!-- CDP -->
+
+<div class="section">
+
+<h2>4. What is CDP?</h2>
+
+<div class="protocol-box">
+
+<div class="small-box cdp">
+<h3>Chrome</h3>
+
+<p>
+Chrome uses CDP
+(Chrome DevTools Protocol).
+</p>
+
+<br>
+
+<ul>
+<li>Network Monitoring</li>
+<li>DOM Manipulation</li>
+<li>Performance Tracking</li>
+<li>Browser Debugging</li>
+</ul>
+
+</div>
+
+<div class="small-box cdpplus">
+<h3>Firefox & WebKit</h3>
+
+<p>
+Firefox and WebKit do not natively support CDP like Chromium.
+</p>
+
+<br>
+
+<p>
+Playwright uses its own browser-specific automation protocol to provide
+a unified API experience.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Why CDP+ -->
+
+<div class="section">
+
+<h2>5. Why Separate Protocol for Firefox and WebKit?</h2>
+
+<p>
+CDP was originally built for Chromium-based browsers.
+Firefox and WebKit have different browser engines and internal architectures.
+</p>
+
+<br>
+
+<h3>Chromium</h3>
+
+<ul>
+<li>Native CDP Support</li>
+<li>Google Maintains CDP</li>
+<li>Direct Communication</li>
+</ul>
+
+<br>
+
+<h3>Firefox</h3>
+
+<ul>
+<li>Different Internal Engine</li>
+<li>No Full Native CDP Support</li>
+<li>Uses Playwright Browser Protocol</li>
+</ul>
+
+<br>
+
+<h3>WebKit</h3>
+
+<ul>
+<li>Safari Engine</li>
+<li>Different Architecture</li>
+<li>Uses Playwright Browser Protocol</li>
+</ul>
+
+<br>
+
+<p>
+Playwright creates custom browser patches and a specialized protocol layer
+to make Firefox and WebKit behave consistently with Chromium.
+</p>
+
+</div>
+
+<!-- Flow -->
+
+<div class="section">
+
+<h2>6. Complete Execution Flow</h2>
+
+<pre>
+Java Test
+      ↓
+
+Playwright Java Library
+      ↓
+
+WebSocket Connection
+      ↓
+
+Playwright Node Server
+      ↓
+
+Browser Protocol Layer
+      ↓
+
+Chrome (CDP)
+
+OR
+
+Firefox / WebKit (Playwright Protocol)
+      ↓
+
+Browser Actions Executed
+</pre>
+
+</div>
+
+<!-- Real Life Example -->
+
+<div class="section">
+
+<h2>7. Real Life Example (Interview Friendly)</h2>
+
+<div class="example">
+
+<h3>Food Delivery Analogy 🍕</h3>
+
+<p><b>You</b> = Client Library</p>
+
+<p><b>Restaurant Manager</b> = Playwright Server</p>
+
+<p><b>Phone Line</b> = WebSocket</p>
+
+<p><b>Kitchen Staff</b> = Browser Engine</p>
+
+<br>
+
+<p>
+When you place an order, you don't directly enter the kitchen.
+You communicate through the manager.
+</p>
+
+<p>
+Similarly, your Playwright script does not directly control the browser.
+Commands go through the Playwright Server.
+</p>
+
+<p>
+The phone line remains active throughout the ordering process,
+just like WebSocket maintains a persistent connection.
+</p>
+
+<p>
+Before serving food, the manager checks whether it is prepared.
+Likewise, Playwright checks whether the element is ready before clicking.
+This is Auto Waiting.
+</p>
+
+</div>
+
+</div>
+
+<!-- Interview -->
+
+<div class="section">
+
+<h2>8. Best Interview Answer</h2>
+
+<div class="interview">
+
+<p>
+"Playwright follows a client-server architecture. We write automation code
+using language-specific client libraries such as Java, JavaScript,
+Python or C#. The client library communicates with the Playwright Node.js
+server over a persistent WebSocket connection. The server then talks to
+browser rendering processes. Chromium uses the native Chrome DevTools
+Protocol (CDP), while Firefox and WebKit use Playwright's own browser
+automation protocol because they do not expose the same CDP capabilities.
+The Playwright server continuously listens for browser events and
+implements auto-waiting by ensuring elements are visible, stable,
+enabled and actionable before performing operations."
+</p>
+
+</div>
+
+</div>
+
+<div class="footer">
+Created for Playwright Interview Preparation 🎭
+</div>
+
+</div>
+
+</body>
+</html>
