@@ -12,9 +12,11 @@ test('tc#1 - Verify that the CURA page is loaded', async ({ page }) => {
     await username.fill("John Doe");
     await password.fill("ThisIsNotAPassword");
     await login.click();
+    await page.waitForTimeout(3000);
 
     let verify_message = page.locator("h2");
     await expect(verify_message).toContainText("Make Appointment");
+    await page.waitForTimeout(3000);
 
     //await expect(page).toHaveTitle(/CURA Healthcare Service/);
 });
